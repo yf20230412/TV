@@ -11,7 +11,7 @@ android {
         minSdk 16
         targetSdk 28
         versionCode 244
-        versionName "2.4.4"
+        versionName "0726"
         multiDexEnabled true
         ndk { abiFilters "armeabi-v7a" }
         javaCompileOptions {
@@ -101,17 +101,17 @@ dependencies {
     implementation 'com.tencent.tbs:tbssdk:44286'
     implementation 'com.github.YarikSOffice:lingver:1.3.0'
     implementation 'me.jessyan:autosize:1.2.1'
-    implementation 'org.eclipse.jetty:jetty-client:8.1.21.v20160908'
-    implementation 'org.eclipse.jetty:jetty-server:8.1.21.v20160908'
-    implementation 'org.eclipse.jetty:jetty-servlet:8.1.21.v20160908'
-    implementation 'org.fourthline.cling:cling-core:2.1.1'
-    implementation 'org.fourthline.cling:cling-support:2.1.1'
+    implementation 'org.eclipse.jetty:jetty-client:8.1.22.v20160922'
+    implementation('org.eclipse.jetty:jetty-server:8.1.22.v20160922')
+    implementation('org.eclipse.jetty:jetty-servlet:8.1.22.v20160922')
+    implementation 'org.fourthline.cling:cling-core:2.1.2-SNAPSHOT'
+    implementation 'org.fourthline.cling:cling-support:2.1.2-SNAPSHOT'
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation('org.simpleframework:simple-xml:2.7.1') { exclude group: 'stax', module: 'stax-api' exclude group: 'xpp3', module: 'xpp3' }
-    implementation(ext: 'aar', name: 'dlna-core', group: 'fongmi', version: 'release')
-    implementation(ext: 'aar', name: 'dlna-dmc', group: 'fongmi', version: 'release')
-    implementation(ext: 'aar', name: 'dlna-dmr', group: 'fongmi', version: 'release')
+    implementation(ext: 'aar', name: 'dlna-core-release', group: 'fongmi', version: 'release')
+    implementation(ext: 'aar', name: 'dlna-dmc-release', group: 'fongmi', version: 'release')
+    implementation(ext: 'aar', name: 'dlna-dmr-release', group: 'fongmi', version: 'release')
     implementation(ext: 'aar', name: 'lib-common-release', group: 'fongmi', version: 'release')
     implementation(ext: 'aar', name: 'lib-container-release', group: 'fongmi', version: 'release')
     implementation(ext: 'aar', name: 'lib-database-release', group: 'fongmi', version: 'release')
