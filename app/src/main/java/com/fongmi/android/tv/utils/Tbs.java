@@ -20,7 +20,7 @@ public class Tbs {
     private static final String TAG = Tbs.class.getSimpleName();
 
     public static String getUrl() {
-        return Server.get().getAddress("x5.tbs.apk");
+        return Server.get().getAddress("/x5.tbs.apk");
     }
 
     private static void tbsInit() {
