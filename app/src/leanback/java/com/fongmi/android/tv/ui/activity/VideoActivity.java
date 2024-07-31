@@ -450,7 +450,7 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
     }
 
     private void setVideoView() {
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         mBinding.control.reset.setText(ResUtil.getStringArray(R.array.select_reset)[Setting.getReset()]);
     }
 
@@ -1071,7 +1071,7 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
 
     private void onDecode(boolean save) {
         mPlayers.toggleDecode(save);
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         setDecodeView();
         onRefresh();
     }
