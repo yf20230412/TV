@@ -143,7 +143,7 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
     }
 
     private void setVideoView() {
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         mPlayers.setPlayer(Setting.getPlayer());
         findViewById(R.id.timeBar).setNextFocusUpId(R.id.reset);
         mBinding.control.reset.setText(ResUtil.getStringArray(R.array.select_reset)[0]);
@@ -219,7 +219,7 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
 
     private void onDecode(boolean save) {
         mPlayers.toggleDecode(save);
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         setDecodeView();
         onReset();
     }
