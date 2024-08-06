@@ -14,7 +14,10 @@ android {
             buildPython "C:/Users/FongMi/AppData/Local/Programs/Python/Python38/python.exe"
             pip {
                 install "lxml"
+                install "ujson"
+                install "pyquery"
                 install "requests"
+                install "jsonpath"
                 install 'pycryptodome'
                 install 'beautifulsoup4'
             }
