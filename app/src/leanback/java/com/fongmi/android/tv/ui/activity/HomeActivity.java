@@ -470,6 +470,7 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     }
 
     private void setLogo() {
+
     }
 
     private void setFocus() {
