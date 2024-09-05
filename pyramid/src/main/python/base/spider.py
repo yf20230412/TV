@@ -13,6 +13,9 @@ from com.github.catvod import Proxy
 class Spider(metaclass=ABCMeta):
     _instance = None
 
+    def __init__(self):
+        self.extend = ''
+
     def __new__(cls, *args, **kwargs):
         if cls._instance:
             return cls._instance
@@ -24,52 +27,43 @@ class Spider(metaclass=ABCMeta):
     def init(self, extend=""):
         pass
 
-    @abstractmethod
     def homeContent(self, filter):
         pass
 
-    @abstractmethod
     def homeVideoContent(self):
         pass
 
-    @abstractmethod
     def categoryContent(self, tid, pg, filter, extend):
         pass
 
-    @abstractmethod
     def detailContent(self, ids):
         pass
 
-    @abstractmethod
-    def searchContent(self, key, quick):
+    def searchContent(self, key, quick, pg="1"):
         pass
 
-    @abstractmethod
-    def searchContentPage(self, key, quick, pg):
-        pass
-
-    @abstractmethod
     def playerContent(self, flag, id, vipFlags):
         pass
 
-    @abstractmethod
+    def liveContent(self):
+        pass
+
     def localProxy(self, param):
         pass
 
-    @abstractmethod
     def isVideoFormat(self, url):
         pass
 
-    @abstractmethod
     def manualVideoCheck(self):
         pass
 
-    @abstractmethod
-    def getName(self):
+    def action(self, action):
         pass
 
-    @abstractmethod
     def destroy(self):
+        pass
+
+    def getName(self):
         pass
 
     def getDependence(self):
@@ -111,8 +105,20 @@ class Spider(metaclass=ABCMeta):
     def html(self, content):
         return etree.HTML(content)
 
+    def str2json(str):
+        return json.loads(str)
+
+    def json2str(str):
+        return json.dumps(str, ensure_ascii=False)
+
     def getProxyUrl(self, local=True):
         return f'{Proxy.getUrl(local)}?do=py'
+
+    def log(self, msg):
+        if isinstance(msg, dict) or isinstance(msg, list):
+            print(json.dumps(msg, ensure_ascii=False))
+        else:
+            print(f'{msg}')
 
     def getCache(self, key):
         value = self.fetch(f'http://127.0.0.1:{Proxy.getPort()}/cache?do=get&key={key}', timeout=5).text

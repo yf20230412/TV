@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.View;
@@ -73,6 +74,11 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
 
     private IjkVideoView getIjk() {
         return mBinding.ijk;
+    }
+
+    private Drawable getDefaultArtwork() {
+        if (mPlayers.isExo()) return getExo().getDefaultArtwork();
+        return getIjk().getDefaultArtwork();
     }
 
     @Override
@@ -221,8 +227,8 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
     private void onDecode(boolean save) {
         mPlayers.toggleDecode(save);
         mPlayers.init(getExo(), getIjk());
+        mPlayers.setMediaSource();
         setDecodeView();
-        onReset();
     }
 
     private void onTrack(View view) {
@@ -359,14 +365,20 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
     }
 
     private void setMetadata() {
-        mPlayers.setMetadata(mBinding.widget.title.getText().toString(), "", "");
+        mPlayers.setMetadata(mBinding.widget.title.getText().toString(), "", "", getDefaultArtwork());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorEvent(ErrorEvent event) {
-        if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
-        else if (mPlayers.addRetry() > event.getRetry()) onError(event);
+        if (mPlayers.addRetry() > event.getRetry()) onError(event);
+        else if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
+        else if (event.isFormat() && mPlayers.isExo()) onErrorFormat(event);
         else onReset();
+    }
+
+    private void onErrorFormat(ErrorEvent event) {
+        mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
+        mPlayers.setMediaSource();
     }
 
     private void onError(ErrorEvent event) {

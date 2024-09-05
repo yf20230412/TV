@@ -1,5 +1,6 @@
 package com.fongmi.android.tv.api.config;
 
+import android.net.Uri;
 import android.text.TextUtils;
 
 import com.fongmi.android.tv.App;
@@ -7,6 +8,7 @@ import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.Setting;
 import com.fongmi.android.tv.api.Decoder;
 import com.fongmi.android.tv.api.LiveParser;
+import com.fongmi.android.tv.api.loader.BaseLoader;
 import com.fongmi.android.tv.bean.Channel;
 import com.fongmi.android.tv.bean.Config;
 import com.fongmi.android.tv.bean.Depot;
@@ -18,11 +20,13 @@ import com.fongmi.android.tv.db.AppDatabase;
 import com.fongmi.android.tv.impl.Callback;
 import com.fongmi.android.tv.ui.activity.LiveActivity;
 import com.fongmi.android.tv.utils.Notify;
+import com.fongmi.android.tv.utils.UrlUtil;
 import com.github.catvod.net.OkHttp;
 import com.github.catvod.utils.Json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -126,11 +130,20 @@ public class LiveConfig {
     }
 
     private void parseText(String text, Callback callback) {
-        Live live = new Live(config.getUrl()).sync();
+        Live live = new Live(parseName(config.getUrl()), config.getUrl()).sync();
         LiveParser.text(live, text);
         lives.add(live);
         setHome(live, true);
         App.post(callback::success);
+    }
+
+    private String parseName(String url) {
+        Uri uri = Uri.parse(url);
+        if ("file".equals(uri.getScheme())) return new File(url).getName();
+        if (uri.getLastPathSegment() != null) return uri.getLastPathSegment();
+        if (uri.getQuery() != null) return uri.getQuery();
+        if (uri.getHost() != null) return uri.getHost();
+        return url;
     }
 
     private void checkJson(JsonObject object, Callback callback) {
@@ -156,6 +169,7 @@ public class LiveConfig {
         try {
             initLive(object);
             initOther(object);
+            BaseLoader.get().parseJar(Json.safeString(object, "spider"));
         } catch (Throwable e) {
             e.printStackTrace();
         } finally {
@@ -164,9 +178,13 @@ public class LiveConfig {
     }
 
     private void initLive(JsonObject object) {
+        String spider = Json.safeString(object, "spider");
         for (JsonElement element : Json.safeListElement(object, "lives")) {
             Live live = Live.objectFrom(element);
             if (lives.contains(live)) continue;
+            live.setApi(parseApi(live.getApi()));
+            live.setExt(parseExt(live.getExt()));
+            live.setJar(parseJar(live, spider));
             lives.add(live.sync());
         }
         for (Live live : lives) {
@@ -180,6 +198,22 @@ public class LiveConfig {
         if (home == null) setHome(lives.isEmpty() ? new Live() : lives.get(0), true);
         setRules(Rule.arrayFrom(object.getAsJsonArray("rules")));
         setAds(Json.safeListString(object, "ads"));
+    }
+
+    private String parseApi(String api) {
+        if (api.startsWith("file") || api.startsWith("assets")) return UrlUtil.convert(api);
+        return api;
+    }
+
+    private String parseExt(String ext) {
+        if (ext.startsWith("file") || ext.startsWith("assets")) return UrlUtil.convert(ext);
+        if (ext.startsWith("img+")) return Decoder.getExt(ext);
+        return ext;
+    }
+
+    private String parseJar(Live live, String spider) {
+        if (live.getJar().isEmpty() && live.getApi().startsWith("csp_")) return spider;
+        return live.getJar();
     }
 
     private void bootLive() {
@@ -263,6 +297,11 @@ public class LiveConfig {
 
     public Live getHome() {
         return home == null ? new Live() : home;
+    }
+
+    public Live getLive(String key) {
+        int index = getLives().indexOf(Live.get(key));
+        return index == -1 ? new Live() : getLives().get(index);
     }
 
     public void setHome(Live home) {
